@@ -72,7 +72,7 @@
 				lastIndex = indexes[i] + numbers[i].length;
 				var dif = index - lastIndex;
 				dif = dif < 0?(-1)*dif:dif;
-				if(nearestDif == -1 || dif < nearestDif) {
+				if(nearestDif == -1 || dif < nearestDif) {
 					nearestDif = dif;
 					nearestIndex = i;
 				}
