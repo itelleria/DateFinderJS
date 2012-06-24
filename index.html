@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html" charset="utf-8" />
+	<title>Buscador de fechas</title>
+</head>
+<body>
+<textarea name="textarea" id="testbox" rows="5" cols="80"></textarea>
+<br /><button id="searcher" value="Search">Search</button>
+<br /><span id="result"></span>
+
+<script type="text/javascript" src="datefinder.js"></script>
+<script type="text/javascript">
+	var searcher = document.getElementById("searcher");
+	var finder = new DateFinder();
+	searcher.addEventListener("click",function(event) {
+		var testbox = document.getElementById("testbox");
+		var resultbox = document.getElementById("result");
+		resultbox.innerHTML = finder.searchDateInText(testbox.value);
+	},false);
+</script>
+</body>
+</html>
