@@ -4,6 +4,24 @@
 		if(settings && settings.keywords) {
 			this.keywords = settings.keywords;
 		}
+		this.regExps = [];
+		for(var i = 0; i < this.keywords.patterns.length; i++) {
+			var regExp = this.keywords.patterns[i];
+			var monthRegExp = this._prepareMonthRegExp();
+			var shortMonthRegExp = this._prepareShortMonthRegExp();
+			var separatorRegExp = this._prepareSeparatorRegExp();
+			regExp = regExp.replace("dd","[0-9]{2}");
+			regExp = regExp.replace("d","[0-9]{1,2}");
+			regExp = regExp.replace("mm","[0-9]{2}");
+			regExp = regExp.replace("m","[0-9]{1,2}");
+			regExp = regExp.replace("yyyy","[0-9]{4}");
+			regExp = regExp.replace("yy","[0-9]{2}");
+			regExp = regExp.replace("MM",monthRegExp);
+			regExp = regExp.replace("M",shortMonthRegExp);
+			regExp = regExp.replace("%",separatorRegExp);
+			this.regExps[i] = new RegExp(regExp,"i");
+		}
+
 	};
 	DateFinder.prototype = {
 		keywords: {
@@ -55,7 +73,41 @@
 			],
 			month: ["mes","meses"],
 			months: ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"],
+			shortMonths: ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"],
 			year: ["año","años","ano","anos"]
+		},
+		_prepareSeparatorRegExp: function() {
+			var separatorRegExp = "(";
+			for(var i = 0; i < this.keywords.separators.length; i++) {
+				if(i>0) {
+					separatorRegExp += "|";
+				}
+				separatorRegExp += this.keywords.separators[i];
+			}
+			separatorRegExp += ")";
+			return separatorRegExp;
+		},
+		_prepareMonthRegExp: function() {
+			var monthRegExp = "(";
+			for(var i = 0; i < this.keywords.months.length; i++) {
+				if(i>0) {
+					monthRegExp += "|";
+				}
+				monthRegExp += this.keywords.months[i];
+			}
+			monthRegExp += ")";
+			return monthRegExp;
+		},
+		_prepareShortMonthRegExp: function() {
+			var monthRegExp = "(";
+			for(var i = 0; i < this.keywords.shortMonths.length; i++) {
+				if(i>0) {
+					monthRegExp += "|";
+				}
+				monthRegExp += this.keywords.shortMonths[i];
+			}
+			monthRegExp += ")";
+			return monthRegExp;	
 		},
 		_searchNearestNumber: function(text, index) {
 			var numberPattern = /\d+/g;
@@ -83,6 +135,14 @@
 		searchDateInText: function(text) {
 			if(!text || text === "") {
 				return null;
+			}
+			// Search all regexp in text
+			for(var i = 0; i < this.regExps.length; i++) {
+				var matched = text.match(this.regExps[i]);
+				console.log("Matched = " + matched);
+				if(matched) {
+					return matched;
+				}
 			}
 			// Search year to date
 			var yearInText = -1;
